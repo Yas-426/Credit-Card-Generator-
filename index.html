@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> SynthCard -  Testing Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bbDark: '#0a0a0c',
+                        bbPanel: '#111114',
+                        bbBorder: '#1f1f23',
+                        bbAccent: '#bb86fc', // Púrpura suave BetterBugs
+                        bbAccentHover: '#a370e0',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        .card-number-font { font-family: 'Share Tech Mono', monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .glass-panel { background: rgba(17, 17, 20, 0.8); backdrop-filter: blur(8px); border: 1px solid #1f1f23; }
+        .card-chip { background: linear-gradient(135deg, #e1b453 0%, #f9e1a9 50%, #e1b453 100%); }
+        
+        /* Animación sutil de pulso al generar */
+        @keyframes pulse-accent {
+            0%, 100% { box-shadow: 0 0 0 0px rgba(187, 134, 252, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(187, 134, 252, 0); }
+        }
+        .generating { animation: pulse-accent 1s linear; }
+    </style>
+</head>
+<body class="bg-bbDark text-gray-200 min-h-screen flex flex-col antialiased">
+
+    <!-- Header Estilizado -->
+    <header class="w-full border-b border-bbBorder bg-bbDark/50 backdrop-blur-sm fixed top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- Placeholder para el logo de BetterBugs -->
+                <div class="w-8 h-8 rounded-full bg-bbAccent flex items-center justify-center font-bold text-bbDark text-xl">💳</div>
+                <h1 class="text-xl font-semibold tracking-tight text-white">Synth <span class="text-bbAccent">Card</span></h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500">v1.2 | Testing Tool</span>
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow flex items-center justify-center pt-24 pb-12 px-4">
+        <div class="w-full max-w-5xl glass-panel rounded-3xl p-8 md:p-10 shadow-2xl flex flex-col md:flex-row gap-10">
+            
+            <!-- COLUMNA IZQUIERDA: Vista Previa y Datos -->
+            <div class="flex-1 flex flex-col gap-8">
+                <!-- 1. Tarjeta Visual Estilizada -->
+                <div class="w-full h-56 bg-gradient-to-br from-gray-800 via-gray-950 to-black rounded-2xl p-7 flex flex-col justify-between shadow-xl relative overflow-hidden border border-gray-800 group hover:border-bbAccent/30 transition-all duration-500">
+                    <!-- Patrón de fondo sutil -->
+                    <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;20&quot; height=&quot;20&quot; viewBox=&quot;0 0 20 20&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot; fill-rule=&quot;evenodd&quot;%3E%3Ccircle cx=&quot;3&quot; cy=&quot;3&quot; r=&quot;3&quot;/%3E%3C/g%3E%3C/svg%3E');"></div>
+                    
+                    <div class="flex justify-between items-start relative z-10">
+                        <div class="w-14 h-10 card-chip rounded-lg shadow-inner"></div>
+                        <span id="cardBrandVisual" class="text-2xl font-extrabold italic tracking-wider text-white opacity-90">VISA</span>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <p id="displayNumber" class="card-number-font text-3xl tracking-widest text-center text-white">4000 1234 5678 9010</p>
+                    </div>
+                    
+                    <div class="flex justify-between items-end text-xs text-gray-300 relative z-10">
+                        <div class="max-w-[70%]">
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider">Titular</p>
+                            <p id="displayName" class="font-medium tracking-wide text-white truncate text-ellipsis text-sm">JUAN PÉREZ</p>
+                        </div>
+                        <div class="flex gap-5 text-right">
+                            <div>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider">Expira</p>
+                                <p id="displayExpiry" class="font-medium text-white text-sm">12/30</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-wider">CVV</p>
+                                <p id="displayCVV" class="font-semibold text-bbAccent card-number-font text-sm">123</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Panel de Datos Limpios (para copiar) -->
+                <div class="bg-bbDark rounded-xl border border-bbBorder p-5 space-y-4">
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Datos de Prueba (Offline)</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between gap-4 bg-bbPanel p-3 rounded-lg border border-bbBorder">
+                            <span class="text-gray-500 w-16">Número</span>
+                            <span id="textNum" class="text-gray-200 font-mono flex-grow text-sm tracking-wide">4000123456789010</span>
+                            <button onclick="copyToClipboard('textNum')" class="text-bbAccent text-xs hover:text-bbAccentHover hover:underline">Copiar</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="flex items-center justify-between gap-3 bg-bbPanel p-3 rounded-lg border border-bbBorder">
+                                <span class="text-gray-500 w-14">Titular</span>
+                                <span id="textName" class="text-gray-200 flex-grow text-xs truncate text-ellipsis font-mono">JUAN PÉREZ</span>
+                                <button onclick="copyToClipboard('textName')" class="text-bbAccent text-xs hover:text-bbAccentHover hover:underline">Copiar</button>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="flex items-center gap-2 flex-grow bg-bbPanel p-3 rounded-lg border border-bbBorder">
+                                    <span class="text-gray-500 text-xs">Exp</span>
+                                    <span id="textDate" class="text-gray-200 font-mono text-sm flex-grow text-center">12/2030</span>
+                                </div>
+                                <div class="flex items-center gap-2 flex-grow bg-bbPanel p-3 rounded-lg border border-bbBorder">
+                                    <span class="text-gray-500 text-xs">CVV</span>
+                                    <span id="textCVV" class="text-bbAccent font-mono text-sm flex-grow text-center">123</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: Configuración y Acción -->
+            <div class="w-full md:w-80 flex flex-col gap-8">
+                <div class="bg-bbPanel rounded-xl border border-bbBorder p-6 space-y-6 flex-grow">
+                    <h3 class="text-lg font-semibold text-white">Configuración</h3>
+                    
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Franquicia / Red</label>
+                        <select id="network" class="w-full bg-bbDark border border-bbBorder rounded-lg p-3 text-sm focus:ring-2 focus:ring-bbAccent outline-none text-white appearance-none cursor-pointer hover:border-gray-600 transition-colors">
+                            <option value="visa">Visa (Classic)</option>
+                            <option value="mastercard">Mastercard (Standard)</option>
+                            <option value="amex">American Express (4-digit CVV)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Región del Nombre</label>
+                        <select class="w-full bg-bbDark border border-bbBorder rounded-lg p-3 text-sm text-gray-600 appearance-none cursor-not-allowed" enabled>
+                            <option>España / Latam</option>
+                            <option>Global Names</option>
+                        </select>
+                        <span class="text-[10px] text-gray-600 block pt-1">*Próximamente v1.3</span>
+                    </div>
+
+                    <div class="bg-bbDark p-4 rounded-lg border border-bbBorder/50 mt-auto">
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            <strong class="text-yellow-500">Aviso:</strong> Esta herramienta genera datos sintéticos que <b>no son reales</b> ni tienen fondos. <br><br>Son válidos <b>matemáticamente</b> (algoritmo Luhn) solo para pasar validaciones de formularios en entornos de desarrollo/testing.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Botón Principal -->
+                <button id="generateBtn" onclick="generateProCard()" class="w-full bg-bbAccent hover:bg-bbAccentHover text-bbDark font-semibold py-4 rounded-xl transition duration-150 text-base shadow-lg shadow-bbAccent/10 active:scale-[0.98] flex items-center justify-center gap-3 group">
+                    <span id="btnText">Generar Nueva Tarjeta</span>
+                    <!-- Icono simple de refresh -->
+                    <svg id="btnIcon" class="w-5 h-5 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Simple -->
+    <footer class="w-full border-t border-bbBorder bg-bbDark mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-5 text-center text-xs text-gray-600">
+            © 2026 SynthCard . Proporcionado solo para fines de prueba interna. Prohibido su uso malintencionado.
+        </div>
+    </footer>
+
+    <!-- Notificación simple de copiado -->
+    <div id="copyNotice" class="fixed bottom-6 right-6 bg-gray-800 border border-gray-700 text-white text-sm px-5 py-3 rounded-xl shadow-xl translate-y-20 opacity-0 transition-all duration-300 z-50">
+        ¡Copiado al portapapeles!
+    </div>
+
+    <script>
+        // Lógica de Negocio (Mantenida y mejorada)
+        const firstNames = [
+        "LI","WEI","YI","CHEN","XIAO","MEI","LING","HAO","JUN","FANG",
+        "AKIRA","HARUTO","YUKI","REN","SORA","HINA","SAKURA","AOI","KENJI","TAKESHI",
+        "MINHO","JISOO","SEOJUN","JIHO","HYUN","YUNA","SOYEON","HANEUL","DAE","EUN",
+        "NGUYEN","MINH","AN","LINH","THAO","QUANG","BAO","PHUC","TRANG","TUAN",
+        "ARJUN","RAHUL","AMIT","ROHAN","VIKRAM","PRIYA","AISHA","ANJALI","KAVYA","ISHA",
+        "MOHAMMED","AHMED","ALI","OMAR","HASSAN","YOUSEF","IBRAHIM","FATIMA","NOOR","LAYLA",
+        "ABDULLAH","SALMAN","KHALID","ZAYN","MARIAM","AYA","RANIA","AMIRA","SAMIR","KARIM",
+        "IVAN","NIKOLAI","DMITRY","ALEXEI","ANASTASIA","SVETLANA","SOFIA","MISHA","YURI","OLGA",
+        "PIOTR","JAN","MAREK","LUKASZ","AGNIESZKA","KATARZYNA","EWA","TOMASZ","ADAM","PAWEL",
+        "LUCA","MATTEO","GIOVANNI","MARCO","GIULIA","SOFIA","CHIARA","FRANCESCO","ANDREA","LORENZO",
+        "PIERRE","LOUIS","JULIEN","HUGO","LEA","CAMILLE","EMMA","LUCIE","ANTOINE","MAXIME",
+        "HANS","LUKAS","FELIX","LEON","EMIL","ANNA","LENA","GRETA","KARL","OTTO",
+        "OLIVER","JACK","GEORGE","HARRY","OSCAR","CHARLIE","ALFIE","NOAH","AMELIA","ISLA",
+        "JAMES","MICHAEL","ROBERT","WILLIAM","DAVID","JOHN","JOSEPH","ETHAN","NOAH","LIAM",
+        "EMMA","OLIVIA","AVA","MIA","CHARLOTTE","EVELYN","ABIGAIL","GRACE","LILY","ZOE",
+        "JUAN","CARLOS","ALEJANDRO","DIEGO","MATEO","LUCAS","MIGUEL","DANIEL","PABLO","SERGIO",
+        "MARIA","ANA","LAURA","LUCIA","MARTA","PAULA","ELENA","JULIA","CARLA","NOA",
+        "PEDRO","RAUL","RUBEN","JAVIER","FERNANDO","ALVARO","ADRIAN","VICTOR","OSCAR","ANDRES",
+        "JOAO","MIGUEL","TIAGO","AFONSO","MARIANA","INES","BEATRIZ","CATARINA","DUARTE","GONCALO",
+        "THABO","SIPHO","NKOSI","AYANDA","LUNGA","ZOLA","AMARA","CHINEDU","IFEANYI","ADEOLA",
+        "KWAME","KOFI","ABENA","AKOSUA","NANA","YAW","AMA","KOJO","MENSAH","AFIA",
+        "JOAQUIN","MARTIN","BENJAMIN","TOMAS","VALENTINA","AGUSTINA","RENATA","FLORENCIA","MALENA","IGNACIO",
+        "CAIO","GABRIEL","ENZO","VINICIUS","RAFAEL","LARISSA","BRUNA","JULIANA","CAMILA","LETICIA",
+        "ERIC","SIMON","NATHAN","ALEX","BEN","SAM","OWEN","ELI","ISAAC","RYAN",
+        "CLARA","ALICE","NORA","VERA","ELSA","IRIS","MAYA","SARAH","HANNAH","VICTORIA"
+        ];
+
+        const lastNames = [
+        "SMITH","JOHNSON","WILLIAMS","BROWN","JONES","MILLER","DAVIS","GARCIA","RODRIGUEZ","WILSON",
+        "MARTINEZ","ANDERSON","TAYLOR","THOMAS","HERNANDEZ","MOORE","MARTIN","JACKSON","THOMPSON","WHITE",
+        "LOPEZ","LEE","GONZALEZ","HARRIS","CLARK","LEWIS","ROBINSON","WALKER","PEREZ","HALL",
+        "YOUNG","ALLEN","SANCHEZ","WRIGHT","KING","SCOTT","GREEN","BAKER","ADAMS","NELSON",
+        "HILL","RAMIREZ","CAMPBELL","MITCHELL","ROBERTS","CARTER","PHILLIPS","EVANS","TURNER","TORRES",
+        "PARKER","COLLINS","EDWARDS","STEWART","MORRIS","MURPHY","COOK","ROGERS","MORGAN","BELL",
+        "COOPER","RICHARDSON","COX","HOWARD","WARD","FLORES","BENNETT","GRAY","JAMES","REYES",
+        "CRUZ","HUGHES","PRICE","MYERS","LONG","FOSTER","SANDERS","ROSS","MORALES","POWELL",
+        "SULLIVAN","RUSSELL","ORTIZ","JENKINS","GUTIERREZ","PERRY","BUTLER","BARNES","FISHER","HENDERSON",
+        "COLEMAN","SIMMONS","PATTERSON","JORDAN","REYNOLDS","HAMILTON","GRAHAM","KIM","GONZALEZ","ALEXANDER",
+
+        "GARCIA","FERNANDEZ","GONZALEZ","RODRIGUEZ","LOPEZ","MARTINEZ","SANCHEZ","PEREZ","GOMEZ","MARTIN",
+        "JIMENEZ","RUIZ","HERNANDEZ","DIAZ","MORENO","MUÑOZ","ALVAREZ","ROMERO","ALONSO","GUTIERREZ",
+        "NAVARRO","TORRES","DOMINGUEZ","VAZQUEZ","RAMOS","GIL","SERRANO","BLANCO","MOLINA","MORALES",
+        "ORTEGA","DELGADO","CASTRO","RUBIO","MARIN","SANZ","IGLESIAS","MEDINA","CORTES","GALLEGO",
+
+        "SILVA","SANTOS","FERREIRA","OLIVEIRA","SOUSA","PEREIRA","COSTA","ROCHA","MARTINS","GOMES",
+
+        "ROSSI","RUSSO","FERRARI","ESPOSITO","ROMANO","COLOMBO","RICCI","MARINO","GRECO","BRUNO",
+
+        "DUBOIS","MOREAU","LAURENT","LEFEBVRE","MICHEL","GIRARD","BONNET","LAMBERT","ROUSSEAU","FONTAINE",
+
+        "MULLER","SCHMIDT","SCHNEIDER","FISCHER","WEBER","MEYER","WAGNER","BECKER","HOFFMANN","SCHULZ",
+
+        "IVANOV","PETROV","SMIRNOV","SOKOLOV","POPOV","VOLKOV","KOZLOV","MOROZOV","NOVIKOV","FEDOROV",
+
+        "NOWAK","KOWALSKI","WISNIEWSKI","WOJCIK","KOWALCZYK","KAMINSKI","LEWANDOWSKI","ZIELINSKI","SZYMANSKI","WOZNIAK",
+
+        "KIM","LEE","PARK","CHOI","JUNG","KANG","CHO","YOON","LIM","SHIN",
+
+        "WANG","LI","ZHANG","LIU","CHEN","YANG","HUANG","ZHAO","WU","ZHOU","XU","SUN","MA","ZHU","GAO",
+
+        "SATO","SUZUKI","TAKAHASHI","TANAKA","WATANABE","ITO","YAMAMOTO","NAKAMURA","KOBAYASHI","KATO",
+
+        "NGUYEN","TRAN","LE","PHAM","HUYNH","HOANG","PHAN","VU","VO","DANG",
+
+        "PATEL","SINGH","KUMAR","SHARMA","GUPTA","VERMA","MEHTA","REDDY","NAIR","IYER",
+
+        "AHMED","HASSAN","ALI","KHAN","HUSSEIN","FARAH","ABDULLAH","RAHMAN","ISMAIL","OMAR",
+
+        "OKAFOR","ADEBAYO","MENSAH","BOATENG","NKOSI","DLAMINI","MBEKI","CHIUME","NDLOVU","MABENA",
+
+        "GONCALVES","TEIXEIRA","MONTEIRO","RIBEIRO","CARVALHO","ALMEIDA","BARBOSA","CARDOSO","CAMPOS","DIAS"
+        ];
+
+        function getRandomName() {
+            const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+            const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+            return `${firstName} ${lastName}`;
+        }
+
+        // Algoritmo Luhn simplificado para generar números *matemáticamente válidos*
+        // Esto es lo que haría la aplicación de BetterBugs real
+        function generateValidNumber(prefix, length) {
+            let num = prefix;
+            while(num.length < length - 1) {
+                num += Math.floor(Math.random() * 10);
+            }
+            
+            // Calcular dígito de control Luhn
+            let sum = 0;
+            let shouldDouble = true;
+            for (let i = num.length - 1; i >= 0; i--) {
+                let digit = parseInt(num.charAt(i));
+                if (shouldDouble) {
+                    if ((digit *= 2) > 9) digit -= 9;
+                }
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }
+            let checkDigit = (10 - (sum % 10)) % 10;
+            return num + checkDigit;
+        }
+
+        function generateProCard() {
+            // Animación visual al botón
+            const btn = document.getElementById('generateBtn');
+            btn.classList.add('generating');
+            document.getElementById('btnText').innerText = "Generando...";
+            setTimeout(() => { 
+                btn.classList.remove('generating'); 
+                document.getElementById('btnText').innerText = "Generar Nueva Tarjeta";
+            }, 800);
+
+            const network = document.getElementById('network').value;
+            let prefix = '4'; // Default Visa
+            let length = 16;
+            let cvvLength = 3;
+            
+            if (network === 'mastercard') { 
+                prefix = ['51', '52', '53', '54', '55'][Math.floor(Math.random()*5)]; 
+            } else if (network === 'amex') { 
+                prefix = ['34', '37'][Math.floor(Math.random()*2)]; 
+                length = 15; 
+                cvvLength = 4;
+            }
+
+            // Generar número válido real
+            const fullNum = generateValidNumber(prefix, length);
+            
+            // Generar CVV
+            let cvv = '';
+            for(let i = 0; i < cvvLength; i++) {
+                cvv += Math.floor(Math.random() * 10);
+            }
+            
+            // Generar Fecha Futura (Años 2026-2032)
+            const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+            const year = Math.floor(Math.random() * 7) + 2026;
+            const shortYear = String(year).substring(2);
+
+            // Generar Titular
+            const randomName = getRandomName();
+
+            // Formatear espacios para el plástico visual (XX XX XX...)
+            let formatted;
+            if(length === 15) { // Formato Amex (4 6 5)
+                formatted = fullNum.replace(/(\d{4})(\d{6})(\d{5})/, '$1 $2 $3');
+            } else { // Formato Estándar (4 4 4 4)
+                formatted = fullNum.match(/.{1,4}/g).join(' ');
+            }
+            
+            // ACTUALIZAR INTERFAZ
+            // 1. Tarjeta Visual
+            document.getElementById('displayNumber').innerText = formatted;
+            document.getElementById('cardBrandVisual').innerText = network.toUpperCase();
+            document.getElementById('displayExpiry').innerText = `${month}/${shortYear}`;
+            document.getElementById('displayCVV').innerText = cvv;
+            document.getElementById('displayName').innerText = randomName;
+
+            // 2. Datos Limpios
+            document.getElementById('textNum').innerText = fullNum;
+            document.getElementById('textName').innerText = randomName;
+            document.getElementById('textDate').innerText = `${month}/${year}`;
+            document.getElementById('textCVV').innerText = cvv;
+        }
+
+        // Utilidad de copiado
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const notice = document.getElementById('copyNotice');
+                notice.classList.remove('translate-y-20', 'opacity-0');
+                notice.classList.add('translate-y-0', 'opacity-100');
+                setTimeout(() => {
+                    notice.classList.remove('translate-y-0', 'opacity-100');
+                    notice.classList.add('translate-y-20', 'opacity-0');
+                }, 2000);
+            });
+        }
+        window.onload = generateProCard;
+    </script>
+</body>
+</html>
